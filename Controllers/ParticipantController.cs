@@ -1,0 +1,8 @@
+using Microsoft.AspNetCore.Mvc;using System.Text.Json;
+public class ParticipantController(RaceDayApi api):Controller{
+ bool Participant=>HttpContext.Session.GetString("Role")=="Participant";
+ public async Task<IActionResult> MyEvents(){if(HttpContext.Session.GetInt32("UserID")==null)return RedirectToAction("Login","Account");if(!Participant)return Forbid();return View(await api.Get<List<JsonElement>>("api/enrolments")??new());}
+ public async Task<IActionResult> MyResults(){if(HttpContext.Session.GetInt32("UserID")==null)return RedirectToAction("Login","Account");if(!Participant)return Forbid();var ev=await api.Get<List<JsonElement>>("api/events")??new();var list=new List<JsonElement>();foreach(var e in ev){var id=e.GetProperty("eventID").GetInt32();var rs=await api.Get<List<JsonElement>>($"api/events/{id}/results");if(rs!=null)list.AddRange(rs);}return View(list);}
+ [HttpGet]public async Task<IActionResult> Profile(){if(HttpContext.Session.GetInt32("UserID")==null)return RedirectToAction("Login","Account");var p=await api.Get<JsonElement>("api/users/profile");return View(new ProfileVm{FullName=p.GetProperty("fullName").GetString()??"",Phone=p.GetProperty("phone").GetString()??""});}
+ [HttpPost][ValidateAntiForgeryToken]public async Task<IActionResult> Profile(ProfileVm m){if(!ModelState.IsValid)return View(m);var r=await api.Send(HttpMethod.Put,"api/users/profile",m);ViewBag.Message=r.ok?"Profile updated.":"Profile update failed.";return View(m);}
+}

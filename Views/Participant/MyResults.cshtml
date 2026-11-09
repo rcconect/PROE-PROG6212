@@ -1,0 +1,1 @@
+@model List<JsonElement><h2>My Results</h2><table class="table"><tr><th>Result</th><th>Enrolment</th><th>Position</th><th>Finish time</th></tr>@foreach(var x in Model){<tr><td>@x.GetProperty("resultID")</td><td>@x.GetProperty("enrolmentID")</td><td>@x.GetProperty("position")</td><td>@x.GetProperty("finishTime")</td></tr>}</table>

@@ -1,0 +1,2 @@
+using Microsoft.AspNetCore.Mvc;using System.Text.Json;
+public class DashboardController(RaceDayApi api):Controller{public async Task<IActionResult> Index(){if(HttpContext.Session.GetInt32("UserID")==null)return RedirectToAction("Login","Account");if(HttpContext.Session.GetString("Role")!="Organiser")return Forbid();var ev=await api.Get<List<JsonElement>>("api/events")??new();ViewBag.Enrolments=(await api.Get<List<JsonElement>>("api/enrolments"))?.Count??0;return View(ev);}}

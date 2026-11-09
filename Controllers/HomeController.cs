@@ -1,0 +1,2 @@
+using Microsoft.AspNetCore.Mvc;using System.Text.Json;
+public class HomeController(RaceDayApi api):Controller{public async Task<IActionResult> Index()=>View(await api.Get<List<JsonElement>>("api/events")??new());public IActionResult Error()=>View();}
